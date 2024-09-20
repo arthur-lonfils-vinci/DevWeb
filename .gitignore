@@ -38,3 +38,34 @@ temp/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Compiled source files
+*.out
+*.class
+*.pyc
+*.o
+
+# Coverage reports
+coverage/
+*.lcov
+
+# Package files
+*.tgz
+*.zip
+*.tar
+*.rar
+
+# Backup files
+*.bak
+*.swp
+*.swo
+
+# System files
+*.pid
+*.seed
+*.pid.lock
+
+# Miscellaneous
+*.log.*
+*.log.[0-9]*
+
