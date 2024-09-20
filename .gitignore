@@ -69,3 +69,67 @@ coverage/
 *.log.*
 *.log.[0-9]*
 
+# Python virtual environment
+venv/
+__pycache__/
+
+# MacOS specific files
+.AppleDouble
+.LSOverride
+
+# Windows specific files
+ehthumbs.db
+Desktop.ini
+
+# Linux specific files
+*~
+
+# Yarn specific files
+.yarn-integrity
+.yarn-cache/
+.pnp.*
+
+# Parcel-bundler cache
+.cache/
+
+# SvelteKit build
+.svelte-kit/
+
+# Next.js build
+.next/
+
+# Nuxt.js build
+.nuxt/
+
+# Gatsby files
+.cache/
+public/
+
+# Storybook files
+.out/
+storybook-static/
+
+# Stylelint cache
+.stylelintcache
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional stylelint cache
+.stylelintcache
+
+# Optional Prettier cache
+.prettiercache
+
+# Optional TernJS cache
+.tern-port
+
+# Optional VS Code settings
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+.vscode/jsconfig.json
+.vscode/tsconfig.json
