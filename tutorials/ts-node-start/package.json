@@ -18,17 +18,16 @@
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "morgan": "~1.9.1"
+    "express": "^4.21.0",
+    "morgan": "~1.9.1",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@types/uuid": "^10.0.0",
     "eslint": "^8.19.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "nodemon": "^2.0.19",
+    "nodemon": "^3.1.6",
     "prettier-airbnb-config": "^1.0.0"
   },
   "author": "e-Baron"
-  
-  
 }
-
