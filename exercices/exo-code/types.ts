@@ -3,9 +3,9 @@ interface film {
   title: string;
   director: string;
   duration: number;
-  budget: number;
-  description: URL;
-  imageURL: URL;
+  budget?: number;
+  description?: URL;
+  imageURL?: URL;
 }
 
 
