@@ -4,8 +4,17 @@
 @baseURL= http://localhost:3000
 GET {{baseURL}}/films
 
-### READ ALL with filter
-GET  {{baseURL}}/films?minimum-duration=153
+### READ ALL with minimum duration filter
+GET  {{baseURL}}/films?by-minimum-duration=153
+
+### READ ALL by first letter filter
+GET {{baseURL}}/films?by-firstLetter=T
+
+### READ ALL by director filter
+GET {{baseURL}}/films?by-director=Christopher Nolan
+
+### READ ALL by budget filter ascendant
+GET {{baseURL}}/films?by-budget
 
 ### READ ONE (by id)
 GET {{baseURL}}/films/4
