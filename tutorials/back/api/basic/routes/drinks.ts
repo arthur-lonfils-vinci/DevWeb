@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { Drink } from "../types";
+import { Drink, NewDrink } from "../types";
 
 const drinks: Drink[] = [
   {
@@ -42,12 +42,82 @@ const drinks: Drink[] = [
     volume: 0.33,
     price: 5,
   },
+  {
+    id: 6,
+    title:"Virgin Tonic",
+    image:"https://plus.unsplash.com/premium_photo-1668771899398-1cdd763f745e?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    volume:0.25,
+    price:4.5
+  },
 ];
 
 const router = Router();
 
-router.get("/", (_req, res) => {
-  return res.json(drinks);
+//Lecture de toutes les boissons en filtrant selon le budget maximum
+router.get("/", (req, res) => {
+  if (!req.query["budget-max"]) {
+    // Cannot call req.query.budget-max as "-" is an operator
+    return res.json(drinks);
+  }
+  const budgetMax = Number(req.query["budget-max"]);
+  const filteredDrinks = drinks.filter((drink) => {
+    return drink.price <= budgetMax;
+  });
+  return res.json(filteredDrinks);
 });
+
+
+//Selection d'une boisson par son id
+router.get("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const drink = drinks.find((drink) => drink.id === id);
+  if (!drink) {
+    return res.sendStatus(404);
+  }
+  return res.json(drink);
+});
+
+
+router.post("/", (req, res) => {
+  const body: unknown = req.body;
+  if (
+    !body ||
+    typeof body !== "object" ||
+    !("title" in body) ||
+    !("image" in body) ||
+    !("volume" in body) ||
+    !("price" in body) ||
+    typeof body.title !== "string" ||
+    typeof body.image !== "string" ||
+    typeof body.volume !== "number" ||
+    typeof body.price !== "number" ||
+    !body.title.trim() ||
+    !body.image.trim() ||
+    body.volume <= 0 ||
+    body.price <= 0
+  ) {
+    return res.sendStatus(400);
+  }
+
+  const { title, image, volume, price } = body as NewDrink;
+
+  const nextId =
+    drinks.reduce((maxId, drink) => (drink.id > maxId ? drink.id : maxId), 0) +
+    1;
+
+  const newDrink: Drink = {
+    id: nextId,
+    title,
+    image,
+    volume,
+    price,
+  };
+
+  drinks.push(newDrink);
+  return res.json(newDrink);
+});
+
+
+
 
 export default router;
