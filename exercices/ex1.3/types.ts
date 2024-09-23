@@ -1,4 +1,4 @@
-interface film {
+interface Film {
   id: number;
   title: string;
   director: string;
@@ -8,5 +8,6 @@ interface film {
   imageURL?: URL;
 }
 
+type NewFilm = Omit<Film, "id">;
 
-export type { film};
+export type { Film, NewFilm};
