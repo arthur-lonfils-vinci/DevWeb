@@ -53,7 +53,7 @@ PATCH {{baseURL}}/films/3
 Content-Type: application/json
 
 {
-    "duration": 179
+    "excel": 179
 }
 
 ### PUT a film (add)

@@ -155,15 +155,24 @@ router.post("/", (req, res) => {
     typeof body.duration !== "number" ||
     !body.title.trim() ||
     !body.director.trim() ||
-    body.duration <= 0
+    body.duration <= 0 ||
+    Object.keys(body).some(
+      (key) =>
+        ![
+          "title",
+          "director",
+          "duration",
+          "budget",
+          "description",
+          "imageURL",
+        ].includes(key)
+    )
   ) {
     return res.status(400).json({ message: "Error 400 : Invalid film data" });
   }
 
   if (isFilmExists(body as Film)) {
-    return res
-      .status(409)
-      .json({ message: "Error 409 : Film already exists" });
+    return res.status(409).json({ message: "Error 409 : Film already exists" });
   }
 
   const { title, director, duration, budget, description, imageURL } =
@@ -224,7 +233,18 @@ router.patch("/:id", (req, res) => {
     ("description" in body &&
       (typeof body.description !== "string" || !body.description.trim())) ||
     ("imageURL" in body &&
-      (typeof body.imageURL !== "string" || !body.imageURL.trim()))
+      (typeof body.imageURL !== "string" || !body.imageURL.trim())) ||
+    Object.keys(body).some(
+      (key) =>
+        ![
+          "title",
+          "director",
+          "duration",
+          "budget",
+          "description",
+          "imageURL",
+        ].includes(key)
+    )
   ) {
     return res
       .status(400)
@@ -272,7 +292,18 @@ router.put("/:id", (req, res) => {
       typeof body.duration !== "number" ||
       !body.title.trim() ||
       !body.director.trim() ||
-      body.duration <= 0
+      body.duration <= 0 || 
+      Object.keys(body).some(
+        (key) =>
+          ![
+            "title",
+            "director",
+            "duration",
+            "budget",
+            "description",
+            "imageURL",
+          ].includes(key)
+      )
     ) {
       return res.status(400).json({ message: "Error 400 : Invalid film data" });
     }
@@ -326,7 +357,18 @@ router.put("/:id", (req, res) => {
       ("description" in body &&
         (typeof body.description !== "string" || !body.description.trim())) ||
       ("imageURL" in body &&
-        (typeof body.imageURL !== "string" || !body.imageURL.trim()))
+        (typeof body.imageURL !== "string" || !body.imageURL.trim())) ||
+      Object.keys(body).some(
+        (key) =>
+          ![
+            "title",
+            "director",
+            "duration",
+            "budget",
+            "description",
+            "imageURL",
+          ].includes(key)
+      )
     ) {
       return res.status(400).json({ message: "Error 400 : Invalid film data" });
     }
