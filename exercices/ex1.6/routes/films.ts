@@ -160,17 +160,10 @@ router.post("/", (req, res) => {
     return res.status(400).json({ message: "Error 400 : Invalid film data" });
   }
 
-  const bodyTitle = body.title.toLowerCase();
-  const bodyDirector = body.director.toLowerCase();
-
-  const filmExists = films.some(
-    (film) =>
-      film.title.toLowerCase() === bodyTitle &&
-      film.director.toLowerCase() === bodyDirector
-  );
-
-  if (filmExists) {
-    return res.status(409).json({ message: "Error 409 : Film already exists" });
+  if (isFilmExists(body as Film)) {
+    return res
+      .status(409)
+      .json({ message: "Error 409 : Film already exists" });
   }
 
   const { title, director, duration, budget, description, imageURL } =
@@ -284,16 +277,7 @@ router.put("/:id", (req, res) => {
       return res.status(400).json({ message: "Error 400 : Invalid film data" });
     }
 
-    const bodyTitle = body.title.toLowerCase();
-    const bodyDirector = body.director.toLowerCase();
-
-    const filmExists = films.some(
-      (film) =>
-        film.title.toLowerCase() === bodyTitle &&
-        film.director.toLowerCase() === bodyDirector
-    );
-
-    if (filmExists) {
+    if (isFilmExists(body as Film)) {
       return res
         .status(409)
         .json({ message: "Error 409 : Film already exists" });
@@ -318,12 +302,7 @@ router.put("/:id", (req, res) => {
     films.push(addedFilm);
 
     return res.status(201).json({ message: "Film created successfully" });
-  
-  
   } else {
-
-
-    
     const id = Number(req.params.id);
     const film = films.find((film) => film.id === id);
 
@@ -349,9 +328,7 @@ router.put("/:id", (req, res) => {
       ("imageURL" in body &&
         (typeof body.imageURL !== "string" || !body.imageURL.trim()))
     ) {
-      return res
-        .status(400)
-        .json({ message: "Error 400 : Invalid film data\nContent : " });
+      return res.status(400).json({ message: "Error 400 : Invalid film data" });
     }
 
     const { title, director, duration, budget, description, imageURL } =
@@ -380,3 +357,19 @@ router.put("/:id", (req, res) => {
 });
 
 export default router;
+
+function isFilmExists(body: Film) {
+  const bodyTitle = body.title.toLowerCase();
+  const bodyDirector = body.director.toLowerCase();
+
+  const filmExists = films.some(
+    (film) =>
+      film.title.toLowerCase() === bodyTitle &&
+      film.director.toLowerCase() === bodyDirector
+  );
+
+  if (filmExists) {
+    return true;
+  }
+  return false;
+}
