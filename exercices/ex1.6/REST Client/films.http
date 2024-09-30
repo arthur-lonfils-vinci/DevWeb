@@ -55,3 +55,29 @@ Content-Type: application/json
 {
     "duration": 179
 }
+
+### PUT a film (add)
+PUT {{baseURL}}/films/9
+Content-Type: application/json
+
+{
+    "title": "The Lion King",
+    "director": "Roger Allers, Rob Minkoff",
+    "duration": 88,
+    "budget": 45000000,
+    "description": "Lion prince Simba and his father are targeted by his bitter uncle, who wants to ascend the throne himself.",
+    "imageURL": "https://www.imdb.com/title/tt0110357/mediaviewer/rm1954748672"
+}
+
+### PUT a film (update)
+PUT {{baseURL}}/films/9
+Content-Type: application/json
+
+{
+    "title": "The Lion King",
+    "director": "Roger Allers, Rob Minkoff",
+    "duration": 92,
+    "budget": 45000000,
+    "description": "Lion prince Simba and his father are targeted by his bitter uncle, who wants to ascend the throne himself.",
+    "imageURL": "https://www.imdb.com/title/tt0110357/mediaviewer/rm1954748672"
+}

@@ -157,7 +157,7 @@ router.post("/", (req, res) => {
     !body.director.trim() ||
     body.duration <= 0
   ) {
-    return res.status(400).json({message : "Error 400 : Invalid film data"});
+    return res.status(400).json({ message: "Error 400 : Invalid film data" });
   }
 
   const bodyTitle = body.title.toLowerCase();
@@ -173,7 +173,6 @@ router.post("/", (req, res) => {
     return res.status(409).json({ message: "Error 409 : Film already exists" });
   }
 
-  // Proceed with the next steps if no match is found
   const { title, director, duration, budget, description, imageURL } =
     body as NewFilm;
 
@@ -195,10 +194,7 @@ router.post("/", (req, res) => {
   return res.json(addedFilm);
 });
 
-
-
 router.delete("/:id", (req, res) => {
-
   const id = Number(req.params.id);
   const filmIndex = films.findIndex((film) => film.id === id);
 
@@ -211,9 +207,7 @@ router.delete("/:id", (req, res) => {
   return res.json({ message: "Film deleted successfully" });
 });
 
-
-router.patch("/:id", (req, res) => {  
-
+router.patch("/:id", (req, res) => {
   const id = Number(req.params.id);
   const film = films.find((film) => film.id === id);
 
@@ -226,44 +220,163 @@ router.patch("/:id", (req, res) => {
   if (
     !body ||
     typeof body !== "object" ||
-    (("title" in body) && 
-        (typeof body.title !== "string" || !body.title.trim())) ||
-    (("director" in body) &&
-        (typeof body.director !== "string" || !body.director.trim())) ||
-    (("duration" in body) &&
-        (typeof body.duration !== "number" || body.duration <= 0)) ||
-    (("budget" in body) &&
-        (typeof body.budget !== "number" || body.budget <= 0)) ||
-    (("description" in body) &&
-        (typeof body.description !== "string" || !body.description.trim())) ||
-    (("imageURL" in body) &&
-        (typeof body.imageURL !== "string" || !body.imageURL.trim()))  
+    ("title" in body &&
+      (typeof body.title !== "string" || !body.title.trim())) ||
+    ("director" in body &&
+      (typeof body.director !== "string" || !body.director.trim())) ||
+    ("duration" in body &&
+      (typeof body.duration !== "number" || body.duration <= 0)) ||
+    ("budget" in body &&
+      (typeof body.budget !== "number" || body.budget <= 0)) ||
+    ("description" in body &&
+      (typeof body.description !== "string" || !body.description.trim())) ||
+    ("imageURL" in body &&
+      (typeof body.imageURL !== "string" || !body.imageURL.trim()))
   ) {
-    return res.status(400).json({message : "Error 400 : Invalid film data\nContent : "});
+    return res
+      .status(400)
+      .json({ message: "Error 400 : Invalid film data\nContent : " });
   }
 
-  const { title, director, duration, budget, description, imageURL } = body as Partial<NewFilm>;
+  const { title, director, duration, budget, description, imageURL } =
+    body as Partial<NewFilm>;
 
-  if(title){
+  if (title) {
     film.title = title;
   }
-  if(director){
+  if (director) {
     film.director = director;
   }
-  if(duration){
+  if (duration) {
     film.duration = duration;
   }
-  if(budget){
+  if (budget) {
     film.budget = budget;
   }
-  if(description){
+  if (description) {
     film.description = description;
   }
-  if(imageURL){
+  if (imageURL) {
     film.imageURL = imageURL;
   }
   return res.status(200).json("Film updated successfully");
 });
 
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const film = films.find((film) => film.id === id);
+
+  if (!film) {
+    const body: unknown = req.body;
+    if (
+      !body ||
+      typeof body !== "object" ||
+      !("title" in body) ||
+      !("director" in body) ||
+      !("duration" in body) ||
+      typeof body.title !== "string" ||
+      typeof body.director !== "string" ||
+      typeof body.duration !== "number" ||
+      !body.title.trim() ||
+      !body.director.trim() ||
+      body.duration <= 0
+    ) {
+      return res.status(400).json({ message: "Error 400 : Invalid film data" });
+    }
+
+    const bodyTitle = body.title.toLowerCase();
+    const bodyDirector = body.director.toLowerCase();
+
+    const filmExists = films.some(
+      (film) =>
+        film.title.toLowerCase() === bodyTitle &&
+        film.director.toLowerCase() === bodyDirector
+    );
+
+    if (filmExists) {
+      return res
+        .status(409)
+        .json({ message: "Error 409 : Film already exists" });
+    }
+
+    const { title, director, duration, budget, description, imageURL } =
+      body as NewFilm;
+
+    const nextId =
+      films.reduce((maxId, film) => (film.id > maxId ? film.id : maxId), 0) + 1;
+
+    const addedFilm: Film = {
+      id: nextId,
+      title,
+      director,
+      duration,
+      budget,
+      description,
+      imageURL,
+    };
+
+    films.push(addedFilm);
+
+    return res.status(201).json({ message: "Film created successfully" });
+  
+  
+  } else {
+
+
+    
+    const id = Number(req.params.id);
+    const film = films.find((film) => film.id === id);
+
+    if (!film) {
+      return res.status(404).json({ message: "Error 404 : Film not found" });
+    }
+
+    const body: unknown = req.body;
+
+    if (
+      !body ||
+      typeof body !== "object" ||
+      ("title" in body &&
+        (typeof body.title !== "string" || !body.title.trim())) ||
+      ("director" in body &&
+        (typeof body.director !== "string" || !body.director.trim())) ||
+      ("duration" in body &&
+        (typeof body.duration !== "number" || body.duration <= 0)) ||
+      ("budget" in body &&
+        (typeof body.budget !== "number" || body.budget <= 0)) ||
+      ("description" in body &&
+        (typeof body.description !== "string" || !body.description.trim())) ||
+      ("imageURL" in body &&
+        (typeof body.imageURL !== "string" || !body.imageURL.trim()))
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Error 400 : Invalid film data\nContent : " });
+    }
+
+    const { title, director, duration, budget, description, imageURL } =
+      body as Partial<NewFilm>;
+
+    if (title) {
+      film.title = title;
+    }
+    if (director) {
+      film.director = director;
+    }
+    if (duration) {
+      film.duration = duration;
+    }
+    if (budget) {
+      film.budget = budget;
+    }
+    if (description) {
+      film.description = description;
+    }
+    if (imageURL) {
+      film.imageURL = imageURL;
+    }
+    return res.status(200).json("Film updated successfully");
+  }
+});
 
 export default router;
