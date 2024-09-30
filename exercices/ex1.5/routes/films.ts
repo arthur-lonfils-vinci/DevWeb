@@ -108,6 +108,7 @@ router.get("/", (_req, res) => {
     const filteredFilms = films.filter((films) => {
       return films.duration >= minDuration;
     });
+
     return res.json(filteredFilms);
   }
 
@@ -127,13 +128,6 @@ router.get("/", (_req, res) => {
     return res.json(filteredFilms);
   }
 
-  if (_req.query["by-budget"]) {
-    const filteredFilms = films.sort((a, b) => {
-        return (a.budget || 0) - (b.budget || 0);
-    });
-    return res.json(filteredFilms);
-  }
-
   return res.json(films);
 });
 
@@ -142,7 +136,7 @@ router.get("/:id", (_req, res) => {
   const id = Number(_req.params.id);
   const film = films.find((film) => film.id === id);
   if (!film) {
-    return res.status(404);
+    return res.status(404).json({ message: "Error 404 : Film not found" });
   }
   return res.json(film);
 });
@@ -163,9 +157,23 @@ router.post("/", (req, res) => {
     !body.director.trim() ||
     body.duration <= 0
   ) {
-    return res.status(400);
+    return res.status(400).json({message : "Error 400 : Invalid film data"});
   }
 
+  const bodyTitle = body.title.toLowerCase();
+  const bodyDirector = body.director.toLowerCase();
+
+  const filmExists = films.some(
+    (film) =>
+      film.title.toLowerCase() === bodyTitle &&
+      film.director.toLowerCase() === bodyDirector
+  );
+
+  if (filmExists) {
+    return res.status(409).json({ message: "Error 409 : Film already exists" });
+  }
+
+  // Proceed with the next steps if no match is found
   const { title, director, duration, budget, description, imageURL } =
     body as NewFilm;
 
