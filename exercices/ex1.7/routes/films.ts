@@ -1,105 +1,12 @@
 import { Router } from "express";
-
+import path from "node:path";
 import { Film, NewFilm } from "../types";
+import { parse, serialize } from "../utils/json";
+const jsonDbPath = path.join(__dirname, "/../data/films.json");
 
 const router = Router();
 
-const films: Film[] = [
-  {
-    id: 1,
-    title: "The Shawshank Redemption",
-    director: "Frank Darabont",
-    duration: 142,
-    budget: 25000000,
-    description: new URL(
-      "https://en.wikipedia.org/wiki/The_Shawshank_Redemption"
-    ),
-    imageURL: new URL(
-      "https://en.wikipedia.org/wiki/The_Shawshank_Redemption#/media/File:ShawshankRedemptionMoviePoster.jpg"
-    ),
-  },
-
-  {
-    id: 2,
-    title: "The Godfather",
-    director: "Francis Ford Coppola",
-    duration: 175,
-    budget: 6000000,
-    description: new URL("https://en.wikipedia.org/wiki/The_Godfather"),
-    imageURL: new URL(
-      "https://en.wikipedia.org/wiki/The_Godfather#/media/File:Godfather_ver1.jpg"
-    ),
-  },
-
-  {
-    id: 3,
-    title: "The Dark Knight",
-    director: "Christopher Nolan",
-    duration: 152,
-    budget: 185000000,
-    description: new URL(
-      "https://en.wikipedia.org/wiki/The_Dark_Knight_(film)"
-    ),
-    imageURL: new URL(
-      "https://en.wikipedia.org/wiki/The_Dark_Knight_(film)#/media/File:Dark_Knight.jpg"
-    ),
-  },
-  {
-    id: 4,
-    title: "Pulp Fiction",
-    director: "Quentin Tarantino",
-    duration: 154,
-    budget: 8000000,
-    description: new URL("https://en.wikipedia.org/wiki/Pulp_Fiction"),
-    imageURL: new URL(
-      "https://en.wikipedia.org/wiki/Pulp_Fiction#/media/File:Pulp_Fiction_(1994)_poster.jpg"
-    ),
-  },
-  {
-    id: 5,
-    title: "Inception",
-    director: "Christopher Nolan",
-    duration: 148,
-    budget: 160000000,
-    description: new URL("https://en.wikipedia.org/wiki/Inception"),
-    imageURL: new URL(
-      "https://en.wikipedia.org/wiki/Inception#/media/File:Inception_(2010)_theatrical_poster.jpg"
-    ),
-  },
-  {
-    id: 6,
-    title: "Fight Club",
-    director: "David Fincher",
-    duration: 139,
-    budget: 63000000,
-    description: new URL("https://en.wikipedia.org/wiki/Fight_Club"),
-    imageURL: new URL(
-      "https://en.wikipedia.org/wiki/Fight_Club#/media/File:Fight_Club_poster.jpg"
-    ),
-  },
-  {
-    id: 7,
-    title: "Forrest Gump",
-    director: "Robert Zemeckis",
-    duration: 142,
-    budget: 55000000,
-    description: new URL("https://en.wikipedia.org/wiki/Forrest_Gump"),
-    imageURL: new URL(
-      "https://en.wikipedia.org/wiki/Forrest_Gump#/media/File:Forrest_Gump_poster.jpg"
-    ),
-  },
-  {
-    id: 8,
-    title: "The Matrix",
-    director: "Lana Wachowski, Lilly Wachowski",
-    duration: 136,
-    budget: 63000000,
-    description: new URL("https://en.wikipedia.org/wiki/The_Matrix"),
-    imageURL: new URL(
-      "https://en.wikipedia.org/wiki/The_Matrix#/media/File:The_Matrix_Poster.jpg"
-    ),
-  },
-];
+const films = parse(jsonDbPath) as Film[];
 
 //read all films and/or filter by minimum duration
 router.get("/", (_req, res) => {
@@ -177,6 +84,7 @@ router.post("/", (req, res) => {
 
   const { title, director, duration, budget, description, imageURL } =
     body as NewFilm;
+    
 
   const nextId =
     films.reduce((maxId, film) => (film.id > maxId ? film.id : maxId), 0) + 1;
@@ -192,7 +100,7 @@ router.post("/", (req, res) => {
   };
 
   films.push(addedFilm);
-
+  serialize(jsonDbPath, films);
   return res.json(addedFilm);
 });
 
@@ -272,6 +180,7 @@ router.patch("/:id", (req, res) => {
   if (imageURL) {
     film.imageURL = imageURL;
   }
+  serialize(jsonDbPath, films);
   return res.status(200).json("Film updated successfully");
 });
 
@@ -331,6 +240,7 @@ router.put("/:id", (req, res) => {
     };
 
     films.push(addedFilm);
+    serialize(jsonDbPath, films);
 
     return res.status(201).json({ message: "Film created successfully" });
   } else {
@@ -394,6 +304,7 @@ router.put("/:id", (req, res) => {
     if (imageURL) {
       film.imageURL = imageURL;
     }
+    serialize(jsonDbPath, films);
     return res.status(200).json("Film updated successfully");
   }
 });
