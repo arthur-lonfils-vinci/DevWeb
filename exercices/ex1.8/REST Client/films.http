@@ -4,20 +4,30 @@
 @baseURL= http://localhost:3000
 GET {{baseURL}}/films
 
-### READ ALL with minimum duration filter
-GET  {{baseURL}}/films?by-minimum-duration=153
+### READ ALL by duration
+GET  {{baseURL}}/films?order=duration
 
-### READ ALL with minimum duration filter (With an Error)
-GET  {{baseURL}}/films?by-minimum-duratio=153
+### READ ALL by duration inverse
+GET  {{baseURL}}/films?order=-duration
 
-### READ ALL by first letter filter
-GET {{baseURL}}/films?by-firstLetter=T
+### READ ALL by title
+GET {{baseURL}}/films?order=title
 
-### READ ALL by director filter
-GET {{baseURL}}/films?by-director=Christopher Nolan
+### READ ALL by title inverse
+GET {{baseURL}}/films?order=-title
+
+### READ ALL by director 
+GET {{baseURL}}/films?order=director
+
+### READ ALL by director inverse
+GET {{baseURL}}/films?order=-director
+
 
 ### READ ONE (by id)
-GET {{baseURL}}/films/4
+GET {{baseURL}}/films/9
+
+### READ ONE (by id) doen't exist
+GET {{baseURL}}/films/200
 
 ### ADD a film
 POST {{baseURL}}/films
@@ -46,9 +56,12 @@ Content-Type: application/json
 }
 
 ### DELETE a film
-DELETE {{baseURL}}/films/4
+DELETE {{baseURL}}/films/9
 
-### UPDATE a film
+### DELETE a film that doesn't exist
+DELETE {{baseURL}}/films/200
+
+### UPDATE a film invalid data
 PATCH {{baseURL}}/films/3
 Content-Type: application/json
 
