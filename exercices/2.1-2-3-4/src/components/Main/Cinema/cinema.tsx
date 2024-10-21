@@ -8,7 +8,7 @@ interface CinemaProps {
 
 const Cinema = (props: CinemaProps) => {
   return (
-    <div>
+    <div key={props.name}>
       <h2>{props.name}</h2>
       <ul>{props.children}</ul>
     </div>
