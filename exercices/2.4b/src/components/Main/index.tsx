@@ -6,25 +6,21 @@ const Main = () => {
   const title = "List of Users";
   const users = [
     {
-      //index: 1,
       name: "John Doe",
       age: 25,
       isOnline: true,
     },
     {
-      //index: 2,
       name: "Jane Doe",
       age: 22,
       isOnline: false,
     },
     {
-      //index: 3,
       name: "James Smith",
       age: 30,
       isOnline: true,
     },
     {
-      //index: 4,
       name: "Judy Smith",
       age: 28,
       isOnline: false,
@@ -36,7 +32,7 @@ const Main = () => {
       <Users title={title}>
         {users.map((user, index) => (
           <UserCard
-            key={index}
+            key={index++}
             user={user.name}
             age={user.age}
             isOnline={user.isOnline}
