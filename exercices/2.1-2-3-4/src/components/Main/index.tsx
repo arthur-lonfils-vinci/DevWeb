@@ -47,7 +47,7 @@ const Main = () => {
     },
   ];
     return (
-    <div>
+    <main>
       
       <PageTitle title={pageTitle} />
 
@@ -62,7 +62,7 @@ const Main = () => {
           <Movie key={movie.title} title={movie.title} director={movie.director} />
         ))}
       </Cinema>
-    </div>
+    </main>
     );
 };
 
