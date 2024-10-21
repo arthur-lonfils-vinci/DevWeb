@@ -3,7 +3,7 @@ interface PageTitleProps {
 }
 
 const PageTitle = (props: PageTitleProps) => {
-  return <h1 key={props.title}>{props.title}</h1>;
+  return <h2 key={props.title}>{props.title}</h2>;
 };
 
 export default PageTitle;
