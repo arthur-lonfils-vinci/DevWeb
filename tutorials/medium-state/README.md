@@ -1,352 +1,743 @@
-# Destructuring et l'état
-## Destructuring 
+# Gestion de l'état plus avancée
+## Gestion de l'état associé à un formulaire  
+### Introduction 
+Il y a beaucoup d'applications web où nous allons souhaiter gérer un formulaire.
 
-Un premier exemple de "destructing assignment" a déjà été présenté dans ce cours : [apprentissage de JS](https://e-vinci.github.io/web2/part0/js-language/#le_destructuring_assignment).
+En React, pour afficher ce qui est visible dans un formulaire, nous allons devoir jouer avec l'état de l'application.
 
-Nous souhaitons améliorer la lisibilité de notre code et ne plus avoir à taper `props.nomDeLaProps` au sein de nos composants React.
+Pour ce tutoriel, veuillez créer une copie du tutoriel `start-state` et l'appeler `medium-state`. Changez le nom du projet dans `package.json` en `medium-state`.
 
-Pour ce tutoriel, veuillez créer une copie du tutoriel `collections` et l'appeler `start-state`. Changez le nom du projet dans `package.json` en `start-state`.
+### Formulaire non contrôllé par React
+Dans le composant `Main` (`/src/components/Main/index.tsx`), à la suite de PizzaMenu,
+nous allons ajouter un formulaire :
 
-Par exemple, nous pourrions simplifier ce composant `Header` :
 ```tsx
-const Header = (props: HeaderProps) => {
+onst Main = () => {
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    console.log("submit:", form.pizza.value, form.description.value);
+  };
+
   return (
-    <header>
-      <h1 className="animate__animated animate__bounce">{props.title}</h1>
-      <h4>Version: {props.version}</h4>
-    </header>
-  );
-};
+    <main>
+      <p>My HomePage</p>
+      <p>
+        Because we love JS, you can also click on the header to stop / start the
+        music ; )
+      </p>
+      <audio id="audioPlayer" controls autoPlay>
+        <source src={sound} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      <PizzaMenu />
+
+      <div>
+        <br />
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="pizza">Pizza</label>
+          <input type="text" id="pizza" name="pizza" />
+          <label htmlFor="description">Description</label>
+          <input type="text" id="description" name="description" />
+          <button type="submit">Ajouter</button>
+        </form>
+      </div>
 ```
 
-Une première étape, en utilisant le destructuring assignment, serait :
-```tsx
-const Header = (props: HeaderProps) => {
-  const { title, version } = props;
-  return (
-    <header>
-      <h1 className="animate__animated animate__bounce">{title}</h1>
-      <h4>Version: {version}</h4>
-    </header>
-  );
-};
+### Event object
+
+L'objet **`event`** a été nommé **`e`** ci-dessus, mais nous aurions pu lui donner le nom que l'on souhaitait.
+
+👍 Pour éviter la confusion, il est recommandé de l'appeler **`e`** (ou éventuellement **`event`**).
+
+L'objet **`event`** est automatiquement passé à la callback d'un gestionnaire d'événements.
+
+Il est très utile, pour deux raisons principalement :
+
+- Stopper l'action par défaut suite à un événement.
+- Lorsqu'on attache une même callback à une multitude d'éléments, pour retrouver la cible de l'événement.
+
+**`e.target`** est l'élément HTML qui lance la propagation de l'événement dans l'arbre des composants.
+
+Parfois on préfère utiliser **`e.currentTarget`** qui est l'élément HTML sur lequel est attaché le gestionnaire d'événements.
+
+Dans le code ci-dessus, on utilise l'objet **`event`** pour stopper l'action par défaut d'un formulaire qui est d'envoyer les données au serveur (indiqué par la propriété **`action`** du formulaire) et de recharger la page.
+
+Veuillez faire ces tests :
+- Exécutez l'application et vérifiez que tout fonctionne.
+- Veuillez maintenant commenter :
+```ts
+ const handleSubmit = (e: SyntheticEvent) => {
+    // e.preventDefault();
+    const form = e.target as HTMLFormElement;
+    console.log("submit:", form.pizza.value, form.description.value);
+  };
 ```
 
-Mais nous pouvons faire le destructuring assignment directement dans le paramètre de la fonction `Header` : 
+Qu'est-ce qui se passe ?  
+Il y a un rechargement de page qui est interdit dans le type d'application que nous développons. Nous reviendrons plus tard sur pourquoi il n'est pas acceptable de recharger la page...
+
+### Formulaire controllé par React
+
+Actuellement, ce formulaire n'est pas controllé par React. Nous avons accès à la valeur des inputs, néanmoins, ça n'est pas une pratique recommandée.
+
+Il est recommandé d'utiliser des composants controllés par React. Les valeurs des inputs doivent être contrôlées par React à travers un état, et les changements seront gérés via les gestionnaires d'événements (`onChange` pour les inputs).
+
+Comme nous avons deux formulaires ici, nous allons créer deux variables d'états et les mettre à jour dans leur gestionnaire d'événements associé :
 ```tsx
-const Header = ({ title, version }: HeaderProps) => {
+const Main = () => {
+  const [pizza, setPizza] = useState("");
+  const [description, setDescription] = useState("");
+
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    console.log("submit:", pizza, description);
+  };
+
+  const handlePizzaChange = (e: SyntheticEvent) => {
+    const pizzaInput = e.target as HTMLInputElement;
+    console.log("change in pizzaInput:", pizzaInput.value);
+    setPizza(pizzaInput.value);
+  };
+
+  const handleDescriptionChange = (e: SyntheticEvent) => {
+    const descriptionInput = e.target as HTMLInputElement;
+    console.log("change in descriptionInput:", descriptionInput.value);
+    setDescription(descriptionInput.value);
+  };
+
   return (
-    <header>
-      <h1 className="animate__animated animate__bounce">{title}</h1>
-      <h4>Version: {version}</h4>
-    </header>
-  );
-};
+    <main>
+      <p>My HomePage</p>
+      <p>
+        Because we love JS, you can also click on the header to stop / start the
+        music ; )
+      </p>
+      <audio id="audioPlayer" controls autoPlay>
+        <source src={sound} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      <PizzaMenu />
+      <div>
+        <br />
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="pizza">Pizza</label>
+          <input
+            value={pizza}
+            type="text"
+            id="pizza"
+            name="pizza"
+            onChange={handlePizzaChange}
+            required
+          />
+          <label htmlFor="description">Description</label>
+          <input
+            value={description}
+            type="text"
+            id="description"
+            name="description"
+            onChange={handleDescriptionChange}
+            required
+          />
+          <button type="submit">Ajouter</button>
+        </form>
+      </div>
 ```
 
-Ainsi, nous avons un code plus concis et plus clair : on sait directement quelles props le composant attend et utilise.  
-👍 Dans la suite de ce cours, nous vous recommandons de tout le temps d'utiliser le destructuring assignment pour passer vos props.
+Nous voyons maintenant que :
+- chaque valeur d'une input est controllée par une variable d'état qui est mise à jour à chaque changement opéré (dans l'input)
+- que grâce à l'event objet, nous avons accès à la valeur de chaque input via `e.target.value`. Néanmoins, comme TS est typé, nous devons d'abord "caster" `e.target` vers un `HTMLInputElement` afin d'avoir accès à `value`.
 
-En plus de mettre à jour `Header`, veuillez mettre à jour `DrinkMenu` :
+Veuillez executez l'application, ouvrir la console, et observer ce qui se passe quand vous écrivez dans les inputs, ainsi que lorsque vous cliquez sur le bouton submit.
+
+Ca y est, nous avons appris comment maîtriser les formulaires en Flutter. 
+
+Il nous reste maintenant à voir comment utiliser les données du formulaire au sein d'une collection de données qui va permettre de mettre à jour nos écrans.
+
+## Gérer une collection comme état de l'application
+
+Très souvent, c'est une collection de données qui sera utilisée comme état de l'application.
+
+Par exemple, dans notre tutoriel, nous souhaiterions qu'une collection de pizzas permette :
+- d'afficher toutes les pizzas du menu ;
+- d'ajouter automatiquement une nouvelle pizzas au menu après soumission des données du formulaire.
+
+Quand nous devons mettre en place une variable d'état, ici un array de `Pizza`, il faut toujours se poser la question : "Mais où est-ce que je dois gérer cet état ?".
+
+Actuellement, la collection de `Pizza` est gérée dans le composant `PizzaMenu`, qui est un "sibling" (un frère ou une soeur) du formulaire. Ainsi, si nous devons y accéder dans ces différents éléments, il faut faire monter l'état vers leur ancêtre commun le plus proche, leur parent. Ici, c'est le composant `Main`.
+
+Nous allons donc mettre à jour `PizzaMenu` pour qu'il reçoive dans ses props la collection de pizza. Voici `PizzaMenu` mis à jour :
+
 ```tsx
-const DrinkMenu = ({ title, children }: DrinkMenuProps) => {
-  return (
-    <div className="drink-menu">
-      <h4>{title}</h4>
-      <div className="drink-items">{children}</div>
-    </div>
-  );
-};
-```
+import { Pizza } from "../../types";
+import "./PizzaMenu.css";
 
-Veuillez aussi mettre à jour `DrinkCard` :
-```tsx
-const DrinkCard = ({ title, image, children }: DrinkCardProps) => {
-  return (
-    <div className="drink-card">
-      <img src={image} alt={title} className="drink-image" width="50" />
-      <h2>{title}</h2>
-      <div className="drink-details">{children}</div>
-    </div>
-  );
-};
-```
-
-## Gestion de l'état
-
-### Comment gérer l'affichage de nouvelles informations ?
-Actuellement, toutes les UI que nous avons développées ne changent pas d'apparence après le premier rendu.
-
-Néanmoins, il y a plein de cas où nous souhaiterions avoir une UI qui se "re-render", se "ré-affiche", après un événement, tel qu'une action des utilisateurs ou un événement temporel. 
-
-Par exemple, nous souhaiterions que dans notre application, lorsqu'on clique sur le `Header`, nous affichions un message au sein de ce `Header`.
-
-Si nous faisions de la programmation "old school", que l'on appelle programmation "impérative", nous devrions nous même :
-- attacher des fonctions à notre UI qui permettent de gérer les événements. Lors d'un clic par exemple, on devrait récupérer une référence vers la représentation mémoire du `<header>`
-- mettre à jour le contenu HTML de cette représentation, généralement via la propriété `.innerHTML` de `<header>` en lui passant le message à afficher (soit sous forme de string, soit en attachant un nouvel élément mémoire correspondant au message).
-Le browser se charge ensuite de réafficher la page une fois la structure mémoire de la page mise à jour par le JS/TS.
-
-Ici, comme nous utilisons React, nous faison de la programmation "déclarative". Nous déclarons des UI (via des composants React), et si nous souhaitons rafraichir les pages, nous devons :
-- déclarer un état associé à notre UI. L'état de notre application, c'est toutes les variables qui vont pouvoir amener à un changement de notre UI.
-- attacher notre UI à des variables d'état.
-- attacher des fonctions à notre UI qui permettent de gérer les événements. Lors d'un event, ces fonctions doivent informer React qu'il y a eu un changement d'état.
-- laisser la magie de l'outil (React ici) mettre à jour toutes les parties de l'UI qui sont impactées par le changement d'état : on parle de "re-rendering".
-Ce mécanisme permet de bien simplifier et optimiser le rendering d'UI.
-
-Voyons ce que ça donne dans la pratique !
-
-### Composant stateful
-Un composant "stateful" est un composant qui a un état, c'est à dire au moins une variable qui va permettre de rafraichir l'UI.
-
-Pour notre tutoriel, nous allons créer la variable d'état `messagePrinted` qui sera un booléan permettant de savoir si l'on affiche ou pas le message caché du `Header`. Nous allons aussi avoir une fonction `setMessagePrinted` pour changer la valeur du booléen.
-
-Mettons à jour le composant `Header` (qui se trouve dans `/src/components/Main/index.tsx`) :
-```tsx
-import { useState } from "react";
-import "./Header.css";
-
-interface HeaderProps {
-  title: string;
-  version: number;
+interface PizzaMenuProps {
+  pizzas: Pizza[];
 }
 
-const Header = ({ title, version }: HeaderProps) => {
-  const [menuPrinted, setMenuPrinted] = useState(false);
-
+const PizzaMenu = ({ pizzas }: PizzaMenuProps) => {
   return (
-    <header onClick={() => setMenuPrinted(!menuPrinted)}>
-      <h1 className="animate__animated animate__bounce">
-        {menuPrinted ? `${title}... and rarely do we hate it!` : title}
-      </h1>
-      <h4>Version: {version}</h4>
-    </header>
+    <table className="pizza-menu">
+      <thead>
+        <tr>
+          <th>Pizza</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {pizzas.map((pizza) => (
+          <tr key={pizza.id}>
+            <td>{pizza.title}</td>
+            <td>{pizza.content}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 };
 
-export default Header;
+export default PizzaMenu;
 ```
 
-D'abord, nous avons importé le hook `useState` de React, qui permet aux composants fonctionnels de gérer leur état interne.
+Nous avons créé l'interface `Pizza` dans un nouveau fichier `/src/types.ts` :
+```ts
+interface Pizza {
+  id: number;
+  title: string;
+  content: string;
+}
 
-`useState(false)` initialise une variable d'état `menuPrinted` avec une valeur initiale de `false`.
-`setMenuPrinted` est une fonction qui permet de mettre à jour l'état `menuPrinted`. Elle est conventionnellement nommée avec `set` suivi du nom de la variable d'état (`MenuPrinted` dans ce cas).
-
-Ce code : 
-```tsx
-<header onClick={() => setMenuPrinted(!menuPrinted)}>
+export type { Pizza };
 ```
 
-Cela attache un gestionnaire d'événements `onClick` à l'élément `<header>`.
-`onClick` s'attend à recevoir une fonction ! Ici on lui a passé une 'function arrow' qui ne prend aucun paramètre.
-Lorsqu'il est cliqué, la fonction bascule l'état `menuPrinted` en appelant `setMenuPrinted(!menuPrinted)`. Si menuPrinted est false, il le définit à true, et vice versa.
+Pour simplifier le développement, nous vous conseillons d'enlever l'autoPlay pour l'audio... Ca fera moins de bruit ; )
 
-Le fait d'avoir utilisé la fonction `setMenuPrinted` qui permet de changer l'état va informer React qu'il y a eu un changement d'état ! Et donc React va opérer un re-render.
-
-Lorsqu'un composant React subit un re-render, seule la fonction de rendu (c'est-à-dire la fonction qui contient le `return` et définit l'interface utilisateur du composant) est réévaluée.
-
-Finalement, lors du rerender, nous allons assurer un rendu conditionnel sur base de la variable d'état :
+Voici la mise à jour du composant `Main` afin de passer une variable d'état initialisée par les pizzas par défaut du menu :
 ```tsx
-{menuPrinted ? `${title}... and rarely do we hate it!` : title}
-```
+const defaultPizzas = [
+  {
+    id: 1,
+    title: "4 fromages",
+    content: "Gruyère, Sérac, Appenzel, Gorgonzola, Tomates",
+  },
+  {
+    id: 2,
+    title: "Vegan",
+    content: "Tomates, Courgettes, Oignons, Aubergines, Poivrons",
+  },
+  {
+    id: 3,
+    title: "Vegetarian",
+    content: "Mozarella, Tomates, Oignons, Poivrons, Champignons, Olives",
+  },
+  {
+    id: 4,
+    title: "Alpage",
+    content: "Gruyère, Mozarella, Lardons, Tomates",
+  },
+  {
+    id: 5,
+    title: "Diable",
+    content: "Tomates, Mozarella, Chorizo piquant, Jalapenos",
+  },
+];
 
-Notons que nous avons utilisé ici l'opérateur ternaire :  
-`condition ? valeurSiVraie : valeurSiFausse`
+const Main = () => {
+  const [pizza, setPizza] = useState("");
+  const [description, setDescription] = useState("");
+  const [pizzas] = useState(defaultPizzas);
 
-Cette opérateur permet d'avoir du code plus concis. Si nous ne l'avions pas utilisé, nous aurions du écrire qqch du style :
-```tsx
-const Header = ({ title, version }: HeaderProps) => {
-  const [menuPrinted, setMenuPrinted] = useState(false);
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    console.log("submit:", pizza, description);
+  };
 
-  if (!menuPrinted) {
-    return (
-      <header onClick={() => setMenuPrinted(!menuPrinted)}>
-        <h1 className="animate__animated animate__bounce">{title}</h1>
-        <h4>Version: {version}</h4>
-      </header>
-    );
-  }
+  const handlePizzaChange = (e: SyntheticEvent) => {
+    const pizzaInput = e.target as HTMLInputElement;
+    console.log("change in pizzaInput:", pizzaInput.value);
+    setPizza(pizzaInput.value);
+  };
+
+  const handleDescriptionChange = (e: SyntheticEvent) => {
+    const descriptionInput = e.target as HTMLInputElement;
+    console.log("change in descriptionInput:", descriptionInput.value);
+    setDescription(descriptionInput.value);
+  };
 
   return (
-    <header onClick={() => setMenuPrinted(!menuPrinted)}>
-      <h1 className="animate__animated animate__bounce">
-        {`${title}... and rarely do we hate it!`}
-      </h1>
-      <h4>Version: {version}</h4>
-    </header>
-  );
-};
+    <main>
+      <p>My HomePage</p>
+      <p>
+        Because we love JS, you can also click on the header to stop / start the
+        music ; )
+      </p>
+      <audio id="audioPlayer" controls >
+        <source src={sound} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      <PizzaMenu pizzas={pizzas} />
 ```
 
+L'application s'affiche comme auparavant.
 
+Nous allons maintenant faire en sorte que lors du submit, on mette à jour la variable d'état `pizzas`.
 
-## Gestionnaire d'événements
+### Mise à jour de l'état en React
 
-Un gestionnaire d'événement est une fonction.
+En React, nous ne devons jamais mettre à jour l'état directement.
+Lors du submit, nous pourrions être tenté de faire qqch du genre :
+```ts
+const newPizza = {
+      id: nextPizzaId(pizzas),
+      title: pizza,
+      content: description,
+    };
+pizzas.push(newPizza);  
+setPizzas(pizzas);
+```
 
+👎 Si vous faites cela, ça pourrait marcher, et vous pourriez vous en sortir malgré tout.  
+Néanmoins, vous risquez d'avoir des soucis de debugging (vous ne pouvez pas suivre les changements d'états), d'optimisation...
+
+👍 Retenez qu'en React, l'état est **immuable**. Si vous souhaitez le changer, vous devez chaque fois passer un nouvel objet à votre fonction mettant à jour l'état.
+
+Par exemple, pour mettre à jour un array, vous avez deux options. Soit vous utilisez la fonction `concat` qui crée un nouvel array, ajoute l'élément, et renvoie le nouvel array :
+```ts
+setPizzas(pizzas.concat(newPizza));
+```
+
+Soit vous utilisez le spread operator pour créer un nouvel array contenant tous les éléments de pizzas, en y ajoutant le dernier élément :
+```ts
+setPizzas([...pizzas, newPizza]);
+```
+
+Voici le code final du  `Main` dans lequel nous avons ajouté une fonction toute à la fin permettant de générer un identifiant :
 ```tsx
-const Header = ({ title, version }: HeaderProps) => {
-  const [menuPrinted, setMenuPrinted] = useState(false);
+import {  SyntheticEvent, useState } from "react";
+import sound from "../../assets/sounds/Infecticide-11-Pizza-Spinoza.mp3";
+import DrinkCard from "./DrinkCard";
+import DrinkMenu from "./DrinkMenu";
+import "./Main.css";
+import PizzaMenu from "./PizzaMenu";
+import { Pizza } from "../../types";
+
+
+const defaultPizzas = [
+  {
+    id: 1,
+    title: "4 fromages",
+    content: "Gruyère, Sérac, Appenzel, Gorgonzola, Tomates",
+  },
+  {
+    id: 2,
+    title: "Vegan",
+    content: "Tomates, Courgettes, Oignons, Aubergines, Poivrons",
+  },
+  {
+    id: 3,
+    title: "Vegetarian",
+    content: "Mozarella, Tomates, Oignons, Poivrons, Champignons, Olives",
+  },
+  {
+    id: 4,
+    title: "Alpage",
+    content: "Gruyère, Mozarella, Lardons, Tomates",
+  },
+  {
+    id: 5,
+    title: "Diable",
+    content: "Tomates, Mozarella, Chorizo piquant, Jalapenos",
+  },
+] ;
+
+const Main = () => {
+  const [pizza, setPizza] = useState("");
+  const [description, setDescription] = useState("");
+  const [pizzas, setPizzas] = useState(defaultPizzas);
+
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    console.log("submit:", pizza, description);
+    const newPizza = {
+      id: nextPizzaId(pizzas),
+      title: pizza,
+      content: description,
+    };
+    
+    setPizzas([...pizzas, newPizza]);
+  };
+
+  const handlePizzaChange = (e: SyntheticEvent) => {
+    const pizzaInput = e.target as HTMLInputElement;
+    console.log("change in pizzaInput:", pizzaInput.value);
+    setPizza(pizzaInput.value);
+  };
+
+  const handleDescriptionChange = (e: SyntheticEvent) => {
+    const descriptionInput = e.target as HTMLInputElement;
+    console.log("change in descriptionInput:", descriptionInput.value);
+    setDescription(descriptionInput.value);
+  };
 
   return (
-    <header onClick={() => setMenuPrinted(!menuPrinted)}>
-      <h1 className="animate__animated animate__bounce">
-        {menuPrinted ? `${title}... and rarely do we hate it!` : title}
-      </h1>
-      <h4>Version: {version}</h4>
-    </header>
+    <main>
+      <p>My HomePage</p>
+      <p>
+        Because we love JS, you can also click on the header to stop / start the
+        music ; )
+      </p>
+      <audio id="audioPlayer" controls >
+        <source src={sound} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      <PizzaMenu pizzas={pizzas} />
+
+      <div>
+        <br />
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="pizza">Pizza</label>
+          <input
+            value={pizza}
+            type="text"
+            id="pizza"
+            name="pizza"
+            onChange={handlePizzaChange}
+            required
+          />
+          <label htmlFor="description">Description</label>
+          <input
+            value={description}
+            type="text"
+            id="description"
+            name="description"
+            onChange={handleDescriptionChange}
+            required
+          />
+          <button type="submit">Ajouter</button>
+        </form>
+      </div>
+
+      <DrinkMenu title="Notre Menu de Boissons">
+        <DrinkCard
+          title="Coca-Cola"
+          image="https://media.istockphoto.com/id/1289738725/fr/photo/bouteille-en-plastique-de-coke-avec-la-conception-et-le-chapeau-rouges-d%C3%A9tiquette.jpg?s=1024x1024&w=is&k=20&c=HBWfROrGDTIgD6fuvTlUq6SrwWqIC35-gceDSJ8TTP8="
+        >
+          <p>Volume: 33cl</p>
+          <p>Prix: 2,50 €</p>
+        </DrinkCard>
+        <DrinkCard
+          title="Pepsi"
+          image="https://media.istockphoto.com/id/185268840/fr/photo/bouteille-de-cola-sur-un-fond-blanc.jpg?s=1024x1024&w=is&k=20&c=xdsxwb4bLjzuQbkT_XvVLyBZyW36GD97T1PCW0MZ4vg="
+        >
+          <p>Volume: 33cl</p>
+          <p>Prix: 2,50 €</p>
+        </DrinkCard>
+        <DrinkCard
+          title="Eau Minérale"
+          image="https://media.istockphoto.com/id/1397515626/fr/photo/verre-deau-gazeuse-%C3%A0-boire-isol%C3%A9.jpg?s=1024x1024&w=is&k=20&c=iEjq6OL86Li4eDG5YGO59d1O3Ga1iMVc_Kj5oeIfAqk="
+        >
+          <p>Volume: 50cl</p>
+          <p>Prix: 1,50 €</p>
+        </DrinkCard>
+      </DrinkMenu>
+    </main>
   );
 };
-```
 
-Nous pouvons définir cette fonction comme "function arrow" (comme fait ci-dessus),
-mais aussi comme fonction anonyme ou fonction nommée.
-
-Lorsqu'une fonction commence à avoir plusieurs instructions, il est recommandé de créer une fonction nommée.  
-En voici un exemple à reprendre dans votre tutoriel dans le composant `Header` :
-
-```tsx
-const Header = ({ title, version }: HeaderProps) => {
-  const [menuPrinted, setMenuPrinted] = useState(false);
-
-  const handleClick = () => {
-    console.log(`value of menuPrinted before click: ${menuPrinted}`);
-    setMenuPrinted(!menuPrinted);
-  }
-
-  return (
-    <header onClick={handleClick}>
-      <h1 className="animate__animated animate__bounce">
-        {menuPrinted ? `${title}... and rarely do we hate it!` : title}
-      </h1>
-      <h4>Version: {version}</h4>
-    </header>
-  );
+const nextPizzaId = (pizzas: Pizza[]) => {
+  return pizzas.reduce((maxId, pizza) => Math.max(maxId, pizza.id), 0) + 1;
 };
+
+export default Main;
 ```
 
-👍 Il est recommandé que vos fonctions de gestion d'événements recoivent un unique paramètre et portent un nom qui commence par "handle" afin de les identifier facilement.
+Notons que la fonction `reduce` est très intéressante : 
+- c'est de la programmation fonctionnelle, `reduce` reçoit une fonction en paramètre (on appelle ça une callback)
+- elle permet d'itérer sur tous les éléments d'une collection, en appelant la callback sur chaque élément de la collection ; chaque élément est reçu dans le deuxième argument de la callback appelé `pizza` ici ;
+- à chaque appel de la callback, le résultat de l'itération prédédente est récupéré dans le 1er argument de la callback appelé `maxId` ici ; 
+- à la 1ère itération, on considère la valeur `0` comme valeur précédente ; c'est d'ailleurs la valeur `0` qui serait renvoyée s'il n'y a pas d'éléments dans la collection.
 
-
-⚡️ Attention, un gestionnaire d'événement doit recevoir une fonction en valeur !  
-Une erreur classique est de lui passer l'appel d'une fonction, comme par exemple : 
-```tsx
-<header onClick={handleClick()}>
-```
-
-Ici ça veut dire que dès que le composant est build, on va automatiquement faire l'appel à `handleClick`, bien qu'il n'y ait pas eu de clic...
-
-Allez-y, veuillez tester pour voir ce que cette erreur classique provoque...
-`Error: Too many re-renders. React limits the number of renders to prevent an infinite loop.` 😱.
-
-💭 Veuillez prendre un moment, au niveau de la compréhension de React, pour voir si vous savez expliquer pourquoi on va vers une boucle infinie.
-
-Exercice : destructing & composant stateful
+## Exercice : Gestion d'une collection pour l'état (ex8)
 
 Veuillez créer un nouveau projet en utilisant les technos Vite + React + TS + SWC nommé `/exercises/XY` dans votre git repo.
 
-Par défaut, le projet de base vous offre déjà un compteur de clic.
+Veuillez créer une nouvelle application qui vous permette, dans la même page :
+- d'afficher 5 de vos films préférés.
+- d'ajouter un film via un formulaire.
 
-Commencez par comprendre ce code et externaliser le compteur de clics dans un composant stateful nommé `ClickCounter`. 
+Un film devra avoir :
+- un titre 
+- un director
+- une durée en minutes
 
-Une fois tout fonctionel et le code compris, veuillez faire un commit avec le message suivant : "new:exXY".
+Un film pourra avoir :
+- un lien vers une image
+- une description
+- un budget (en million).
 
-Mettez à jour ce composant pour afficher :
-- un titre qu'il reçoit en props. 
-- un message sous le nombre de clics à afficher seulement à partir de 10 clics. Ce message doit être passé en props. Vous passerez cette valeur pour votre application : "You are a master in the art of clicking !".
+Une fois tout fonctionel, veuillez faire un commit avec le message suivant : "new:exXY"
 
+## Gestion d'un état partagé par plusieurs composants
+Quand un état est partagé par plusieurs composants, la gestion se complique parfois un peu.
 
-Veuillez utiliser le destructing (assignement) comme vu dans le cours.
+Pour notre tutoriel, afin de bien structurer notre code, nous allons créer un nouveau composant `AddPizza` dans `/src/components/Main/AddPizza.tsx` :
+```tsx
+import { useState, SyntheticEvent } from "react";
 
-Une fois tout fonctionel, veuillez faire un commit avec le message suivant : "new:exXY".
+import { NewPizza } from "../../types";
 
-Veuillez reprendre votre projet précédent et ajouter deux gestionnaires d'événements qui permettront : 
-- lors du passage de la souris sur le compteur, d'afficher un message au dessus du comptage de clics. Notez que ce message doit aussi être passé en props à `ClickCounter`.  
-Vous passerez cette valeur pour votre application : "Please click on me now !".
-- lorsque la souris quitte le compteur, ce message doit être enlevé.
+interface AddPizzaProps {
+  addPizza: (pizza: NewPizza) => void;
+}
 
-Une fois tout fonctionel, veuillez faire un commit avec le message suivant : "new:exXY".
+const AddPizza = ({ addPizza }: AddPizzaProps) => {
+  const [pizza, setPizza] = useState("");
+  const [description, setDescription] = useState("");
 
-🤝 Tips :
-- Vous allez devoir gérer une nouvelle variable d'état pour savoir si la souris est sur le compteur ou si la souris a quitté le compteur.
-- Quels gestionnaires d'événements ? Commencer à taper `on` en propriétés de l'élément sur lequel vous voulez écouter les passages de souris et vous verrez la liste de tous les événements. 
-- Vous ne voyez toujours pas ? `onMouseEnter`, `onMouseLeave` ; )
-- N'hésitez pas à utiliser tout ce qui existe déjà dans `index.css` concernant le button pour vous aider à gérer l'aspect visuel du compteur.
+  const handleSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    console.log("submitting pizza:", pizza, description);
+    addPizza({ title: pizza, content: description });
+  };
 
-🍬 Challenge : paramètres optionnels
-Tentez de rendre les 2 messages passés en props à `ClickCounter` optionnels, tout en leur donnant une valeur par défaut.
+  const handlePizzaChange = (e: SyntheticEvent) => {
+    const pizzaInput = e.target as HTMLInputElement;
+    console.log("change in pizzaInput:", pizzaInput.value);
+    setPizza(pizzaInput.value);
+  };
 
-Exercice : composant stateful
+  const handleDescriptionChange = (e: SyntheticEvent) => {
+    const descriptionInput = e.target as HTMLInputElement;
+    console.log("change in descriptionInput:", descriptionInput.value);
+    setDescription(descriptionInput.value);
+  };
 
-Nous allons continuer le projet d'un exercice précédent qui se trouve dans le dossier `/exercises/XY` dans votre git repo.
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="pizza">Pizza</label>
+        <input
+          value={pizza}
+          type="text"
+          id="pizza"
+          name="pizza"
+          onChange={handlePizzaChange}
+          required
+        />
+        <label htmlFor="description">Description</label>
+        <input
+          value={description}
+          type="text"
+          id="description"
+          name="description"
+          onChange={handleDescriptionChange}
+          required
+        />
+        <button type="submit">Ajouter</button>
+      </form>
+    </div>
+  );
+};
 
-Notre client a rajouté dans les données des images associées aux films une courte description. Veuillez créer un nouveau composant `Movie` qui doit permettre :
-- D'afficher les mêmes données de films qui sont actuellement toutes traitées dans le composant `Cinema`(`Cinema` fera donc appel à `Movie`) ;
-- D'afficher la description d'un film si les utilisateurs cliquent sur le film ;
-- De ne plus afficher cette description si les utilisateurs cliquent dessus.
-
-Voici le nouveau format des données :
-```ts
-const App = () => {
-  const pageTitle = "Informations sur les films dans les cinémas";
-
-  const cinema1Name = "UGC DeBrouckère";
-
-  const moviesCinema1 = [
-    {
-      title: "HAIKYU-THE DUMPSTER BATTLE",
-      director: "Susumu Mitsunaka",
-      description:
-        "A high-energy sports anime movie focusing on the intense volleyball rivalry between Karasuno High and their fierce competitors.",
-    },
-    {
-      title: "GOODBYE JULIA",
-      director: "Mohamed Kordofani",
-      description:
-        "A poignant drama that explores themes of love, loss, and the complex dynamics of human relationships in a deeply emotional narrative.",
-    },
-    {
-      title: "INCEPTION",
-      director: "Christopher Nolan",
-      description:
-        "A mind-bending sci-fi thriller where a skilled thief, who enters people's dreams to steal secrets, is given a chance to have his criminal record erased if he can implant an idea into a target's subconscious.",
-    },
-    {
-      title: "PARASITE",
-      director: "Bong Joon-ho",
-      description:
-        "An Oscar-winning dark comedy thriller that examines class disparities through the story of two families — one wealthy, the other destitute — and their increasingly complicated relationship.",
-    },
-  ];
-
-  const cinema2Name = "UGC Toison d'Or";
-
-  const moviesCinema2 = [
-    {
-      title: "THE WATCHERS",
-      director: "Ishana Night Shyamalan",
-      description:
-        "A suspenseful thriller that follows a group of people who are under constant surveillance, leading them to uncover dark secrets about their observers and themselves.",
-    },
-    {
-      title: "BAD BOYS: RIDE OR DIE",
-      director: "Adil El Arbi, Bilall Fallah",
-      description:
-        "The latest installment in the action-packed Bad Boys franchise, featuring detectives Mike Lowrey and Marcus Burnett as they take on their most dangerous case yet.",
-    },
-    {
-      title: "TENET",
-      director: "Christopher Nolan",
-      description:
-        "A complex and visually stunning sci-fi action film where a protagonist embarks on a time-bending mission to prevent World War III, navigating through a world of temporal inversion.",
-    },
-    {
-      title: "THE IRISHMAN",
-      director: "Martin Scorsese",
-      description:
-        "An epic crime drama that chronicles the life of Frank Sheeran, a mob hitman, as he reflects on his involvement with the Bufalino crime family and the mysterious disappearance of his friend, Jimmy Hoffa.",
-    },
-  ];
-  //... the following does not change
+export default AddPizza;
 ```
 
+Nous avons créé un nouveau type `NewPizza` qui est quasi identique au type `Pizza`, à la différence qu'il ne contient pas d'id :
+```ts
+interface Pizza {
+  id: number;
+  title: string;
+  content: string;
+}
+
+type NewPizza = Omit<Pizza, "id">;
+
+export type { Pizza, NewPizza };
+```
+
+Le composant `AddPizza` reçoit de son parent la callback qui permet de mettre à jour l'état géré par le parent ! 
+
+💭 Nous pouvons maintenant bien assimiler comment un composant "enfant" peut renvoyer de l'information à son parent. C'est via la callback que l'enfant reçoit, lorsqu'il l'appelle, qu'il passera en paramètre ses données. Ici, l'enfant passe comme info au parent une nouvelle pizza : `addPizza({ title: pizza, content: description });`
+
+Il est à noter que comme l'enfant n'a pas accès à tous les identifiants de pizza, c'est le parent qui devra générer un identifiant.
+
+Ainsi, le composant `Main` est simplifié en faisant appel à `AddPizza` :
+```tsx
+import {  useState } from "react";
+import sound from "../../assets/sounds/Infecticide-11-Pizza-Spinoza.mp3";
+import DrinkCard from "./DrinkCard";
+import DrinkMenu from "./DrinkMenu";
+import "./Main.css";
+import PizzaMenu from "./PizzaMenu";
+import { NewPizza, Pizza } from "../../types";
+import AddPizza from "./AddPizza";
+
+
+const defaultPizzas = [
+  {
+    id: 1,
+    title: "4 fromages",
+    content: "Gruyère, Sérac, Appenzel, Gorgonzola, Tomates",
+  },
+  {
+    id: 2,
+    title: "Vegan",
+    content: "Tomates, Courgettes, Oignons, Aubergines, Poivrons",
+  },
+  {
+    id: 3,
+    title: "Vegetarian",
+    content: "Mozarella, Tomates, Oignons, Poivrons, Champignons, Olives",
+  },
+  {
+    id: 4,
+    title: "Alpage",
+    content: "Gruyère, Mozarella, Lardons, Tomates",
+  },
+  {
+    id: 5,
+    title: "Diable",
+    content: "Tomates, Mozarella, Chorizo piquant, Jalapenos",
+  },
+] ;
+
+const Main = () => {
+
+  const [pizzas, setPizzas] = useState(defaultPizzas);
+
+
+  const addPizza = (newPizza:NewPizza) => {   
+    const pizzaAdded = { ...newPizza, id: nextPizzaId(pizzas) };
+    setPizzas([...pizzas, pizzaAdded]);
+  };
+
+
+  return (
+    <main>
+      <p>My HomePage</p>
+      <p>
+        Because we love JS, you can also click on the header to stop / start the
+        music ; )
+      </p>
+      <audio id="audioPlayer" controls >
+        <source src={sound} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      <PizzaMenu pizzas={pizzas} />
+
+      <div>
+        <br />
+        <AddPizza addPizza={addPizza} />
+      </div>
+
+      <DrinkMenu title="Notre Menu de Boissons">
+        <DrinkCard
+          title="Coca-Cola"
+          image="https://media.istockphoto.com/id/1289738725/fr/photo/bouteille-en-plastique-de-coke-avec-la-conception-et-le-chapeau-rouges-d%C3%A9tiquette.jpg?s=1024x1024&w=is&k=20&c=HBWfROrGDTIgD6fuvTlUq6SrwWqIC35-gceDSJ8TTP8="
+        >
+          <p>Volume: 33cl</p>
+          <p>Prix: 2,50 €</p>
+        </DrinkCard>
+        <DrinkCard
+          title="Pepsi"
+          image="https://media.istockphoto.com/id/185268840/fr/photo/bouteille-de-cola-sur-un-fond-blanc.jpg?s=1024x1024&w=is&k=20&c=xdsxwb4bLjzuQbkT_XvVLyBZyW36GD97T1PCW0MZ4vg="
+        >
+          <p>Volume: 33cl</p>
+          <p>Prix: 2,50 €</p>
+        </DrinkCard>
+        <DrinkCard
+          title="Eau Minérale"
+          image="https://media.istockphoto.com/id/1397515626/fr/photo/verre-deau-gazeuse-%C3%A0-boire-isol%C3%A9.jpg?s=1024x1024&w=is&k=20&c=iEjq6OL86Li4eDG5YGO59d1O3Ga1iMVc_Kj5oeIfAqk="
+        >
+          <p>Volume: 50cl</p>
+          <p>Prix: 1,50 €</p>
+        </DrinkCard>
+      </DrinkMenu>
+    </main>
+  );
+};
+
+const nextPizzaId = (pizzas: Pizza[]) => {
+  return pizzas.reduce((maxId, pizza) => Math.max(maxId, pizza.id), 0) + 1;
+};
+
+export default Main;
+```
+
+## Résumé des choses importantes
+💭 Vous devriez à présent avoir les réponses à ces questions : 
+- Comment passer de l'info d'un parent vers ses enfants ?
+- Comment passer de l'info d'un enfant vers un ancêtre ?
+- Comment passer de l'info d'un sibling (frère ou soeur) vers un autre sibling ?
+
+
+## 🍬 Challenge optionnel ? : gestion d'un état partagé (ex9)
+
+Veuillez créer un nouveau projet en copiant le code du tutoriel nommé `medium-state` en tant que répertoire `/exercises/XY` dans votre git repo.
+
+Vous avez remarqué que dans le composant `Main`, il est écrit : "Because we love JS, you can also click on the header to stop / start the music ; )"
+
+Nous vous demandons de remplir cette mission. A l'aide de JS/TS, veuillez faire en sorte que l'on puisse cliquer sur le Header et que cela démarre ou stop la musique de l'élément `<audio>` présent dans le main.
+
+🤝 Tips :
+- Utilisation du Hook `useRef` pour obtenir une référence directe et persistante à l'élément `<audio>`, qui peut être mutée, ce qui permet d'interagir avec cet élément DOM de manière impérative, par exemple pour appeler la méthode `play` ou `pause`. L'avantage de cette méthode c'est qu'elle ne provoque pas de re-render du composant quand il est mis à jour (à l'inverse de si l'on faisait de la programmation old-school avec `document.getElementById` pour récupérer une référence à `<audio>`).
+- Utilisation à du Hook `useEffect` pour réaliser une action à chaque fois que l'on a une action à réaliser parce qu'il y aurait eu un clic dans le Header. Dans ce cas-ci, il faudrait bien comprendre le `useEffect` pour l'associer au changement d'une variable d'état (qui représente s'il y a besoin d'une action à faire à cause d'un clic dans le header).
+
 Une fois tout fonctionel, veuillez faire un commit avec le message suivant : "new:exXY".
+
+# Debugging d'une application React
+## Introduction
+💭 Qui est votre meilleur ami ?
+
+Il est possible qu'à ce stade-ci, vous ignorez une des bonnes réponses, car pour les développeurs, le debugger est leur meilleur ami !
+
+Le debugger est toujours là pour vous, prêt à vous faire voyager pas à pas dans votre code, à vous donner des pistes dans les moments difficiles, sans imposer de solutions, il vous offre une liberté totale ! Et il acceptera toujours votre code tel qu'il est, sous réserve bien sûr que celui-ci compile.
+C'est exactement ce que l'on attend d'un ami 😁.
+
+## Debugging sous Chrome
+Pour accéder aux outils de debugging sous Chrome :
+- Soit clic droit sur votre page Web, `Inspect`
+- Soit `F12`
+- Clic sur le tab `Sources`
+- Dans `localhost:5173` (ou un autre port en fonction du port associé à votre app, `5173` est le port par défaut d'une application executée par `Vite`), dans `src`, vous trouverez vos fichiers `.tsx`. Il y a chaque fois deux versions d'un même fichier ; celle qui vous intéresse est celle dont le nom de fichier est écrit en italique : c'est un map de vos sources contenant le code TSX / TS. 
+
+Pour débugger un fichier `.tsx` ou `.ts` : 
+- Ajout de breakpoint : clic sur le numéro de la ligne à gauche du code
+- Utilisation des flèches pour exécuter et naviguer dans le code :
+  - `Step over` : pour aller à la ligne de code suivante
+  - `Step into` : pour entrer dans une fonction
+  - `Resume` : pour aller au prochain breakpoint (souvent utilisé quand on veut avancer plus vite dans du code contenant de nombreuses lignes)
+
+  ## Debugging dans VS code
+
+  Veuillez ouvrir votre application dans VS Code en tant que Workspace. Pour ce faire :
+  `File`, `Open Folder...` et sélectionnez le répertoire de votre application Vite + React + TS.
+  
+  La toute première fois, vous devez créer une configuration pour votre debugger :
+  - Cliquez sur `Run and Debug.
+  - Cliquez sur `create a launch.json file`.
+  - Sélectionnez `Web App (Chrome)`.
+
+  Vous obtenez une configuration dans `.vscode/launch.json`. Veuillez changer le port de l'url vers le port par défaut de `Vite` (`5173`):
+```json
+  {
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Launch Chrome against localhost",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}"
+        }
+    ]
+}
+```
+
+  D'abord lancez la commande `npm run dev`. Maintenant que votre application tourne, vous allez lui attacher le debugger.
+
+  Il suffit de cliquer ensuite sur `F5` pour lancer le debugger.

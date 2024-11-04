@@ -7,7 +7,6 @@ import PizzaMenu from "./PizzaMenu";
 import { NewPizza, Pizza } from "../../types";
 import AddPizza from "./AddPizza";
 
-
 const defaultPizzas: Pizza[] = [
   {
     id: 1,
@@ -36,16 +35,13 @@ const defaultPizzas: Pizza[] = [
   },
 ];
 
-
-
 const Main = () => {
   const [pizzas, setPizzas] = useState(defaultPizzas);
 
   const addPizza = (newPizza: NewPizza) => {
-    const pizzaAdded = {...newPizza, id: nextPizzaId(pizzas)};
+    const pizzaAdded = { ...newPizza, id: nextPizzaId(pizzas) };
     setPizzas([...pizzas, pizzaAdded]);
   };
-
 
   return (
     <main>
@@ -54,20 +50,20 @@ const Main = () => {
         Because we love JS, you can also click on the header to stop / start the
         music ; )
       </p>
-      <audio id="audioPlayer" controls >
+      <audio id="audioPlayer" controls>
         <source src={sound} type="audio/mpeg" />
         Your browser does not support the audio element.
       </audio>
+      <PizzaMenu pizzas={pizzas} />
 
-
-      <PizzaMenu pizzas={pizzas}/>
-
-
+      {/*  The htmlFor attribute in React is equivalent to the for attribute in standard HTML. 
+      It is used to associate a `<label>` element with an <input> element. 
+      This association is important for accessibility and usability, 
+      as it allows users to click on the label to focus the corresponding input field. */}
       <div>
         <br />
         <AddPizza addPizza={addPizza} />
       </div>
-
 
       <DrinkMenu title="Notre Menu de Boissons">
         <DrinkCard

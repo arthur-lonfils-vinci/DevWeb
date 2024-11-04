@@ -1,11 +1,11 @@
-import "./PizzaMenu.css";
 import { Pizza } from "../../types";
+import "./PizzaMenu.css";
 
 interface PizzaMenuProps {
   pizzas: Pizza[];
 }
 
-const PizzaMenu = ({pizzas}: PizzaMenuProps) => {
+const PizzaMenu = ({ pizzas }: PizzaMenuProps) => {
   return (
     <table className="pizza-menu">
       <thead>

@@ -1,4 +1,5 @@
 import { useState, SyntheticEvent } from "react";
+
 import { NewPizza } from "../../types";
 
 interface AddPizzaProps {
@@ -11,7 +12,7 @@ const AddPizza = ({ addPizza }: AddPizzaProps) => {
 
   const handleSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    console.log("submit:", pizza, description);
+    console.log("submitting pizza:", pizza, description);
     addPizza({ title: pizza, content: description });
   };
 
@@ -28,17 +29,29 @@ const AddPizza = ({ addPizza }: AddPizzaProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="pizza">Pizza</label>
-      <input type="text" value={pizza} onChange={handlePizzaChange} />
-      <label htmlFor="description">Description</label>
-      <input
-        type="text"
-        value={description}
-        onChange={handleDescriptionChange}
-      />
-      <button type="submit">Add Pizza</button>
-    </form>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="pizza">Pizza</label>
+        <input
+          value={pizza}
+          type="text"
+          id="pizza"
+          name="pizza"
+          onChange={handlePizzaChange}
+          required
+        />
+        <label htmlFor="description">Description</label>
+        <input
+          value={description}
+          type="text"
+          id="description"
+          name="description"
+          onChange={handleDescriptionChange}
+          required
+        />
+        <button type="submit">Ajouter</button>
+      </form>
+    </div>
   );
 };
 
