@@ -1,12 +1,10 @@
-import type {Movie} from "./exclude/MovieItem";
-import MovieItem from "./exclude/MovieItem";
+import type {Movie} from "./MovieItem";
+import MovieItem from "./MovieItem";
 
 interface CinemaProps {
   name: string;
   movies: Movie[];
 }
-
-
 
 const Cinema = (props: CinemaProps) => (
   <div>

@@ -1,4 +1,3 @@
-import "./Footer.css";
 
 interface FooterProps {
   urlLogo: string;

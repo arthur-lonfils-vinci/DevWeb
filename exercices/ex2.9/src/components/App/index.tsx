@@ -1,11 +1,10 @@
 import { useState } from "react";
-import AddMovieForm from "./AddMovieForm";
-import "./App.css";
-import Footer from "./Footer";
-import Header from "./Header";
-import MovieListView from "./MovieListView";
-import PageTitle from "./PageTitle";
-import { Movie } from "../types";
+import AddMovieForm from "../Main/AddMovieForm";
+import Footer from "../Footer/Footer";
+import Header from "../Header/Header";
+import MovieListView from "../Main/MovieListView";
+import PageTitle from "../Main/PageTitle";
+import { Movie } from "../../types";
 
 const App = () => {
   const defaultMovies : Movie[]= [

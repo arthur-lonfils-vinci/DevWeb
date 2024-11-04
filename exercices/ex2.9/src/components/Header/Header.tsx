@@ -1,4 +1,3 @@
-import "./Header.css";
 
 interface HeaderProps {
   urlLogo: string;
