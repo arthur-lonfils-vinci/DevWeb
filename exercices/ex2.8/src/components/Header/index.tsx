@@ -32,8 +32,8 @@ const Header = ({
     <header onClick={combinedClickHandler}>
       <h1 className="animate__animated animate__bounce">
         {menuPrinted ? `${title}... and rarely do we hate it!` : title}
-        {isPlaying ? "🎵" : "🔇"}
-      </h1>
+        {isPlaying ? " (🎵)" : " (🔇)"}
+        </h1>
       <h4>Version: {version}</h4>
     </header>
   );
