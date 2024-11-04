@@ -1,12 +1,11 @@
 import { useState } from "react";
-import sound from "../../assets/sounds/Infecticide-11-Pizza-Spinoza.mp3";
 import DrinkCard from "./DrinkCard";
 import DrinkMenu from "./DrinkMenu";
 import "./Main.css";
 import PizzaMenu from "./PizzaMenu";
 import { NewPizza, Pizza } from "../../types";
 import AddPizza from "./AddPizza";
-
+import AudioPlayer from "./AudioPlayer";
 
 const defaultPizzas: Pizza[] = [
   {
@@ -36,16 +35,17 @@ const defaultPizzas: Pizza[] = [
   },
 ];
 
+interface MainProps {
+  isAudioPlaying: boolean;
+}
 
-
-const Main = () => {
+const Main = ({ isAudioPlaying }: MainProps) => {
   const [pizzas, setPizzas] = useState(defaultPizzas);
 
   const addPizza = (newPizza: NewPizza) => {
-    const pizzaAdded = {...newPizza, id: nextPizzaId(pizzas)};
+    const pizzaAdded = { ...newPizza, id: nextPizzaId(pizzas) };
     setPizzas([...pizzas, pizzaAdded]);
   };
-
 
   return (
     <main>
@@ -54,20 +54,15 @@ const Main = () => {
         Because we love JS, you can also click on the header to stop / start the
         music ; )
       </p>
-      <audio id="audioPlayer" controls >
-        <source src={sound} type="audio/mpeg" />
-        Your browser does not support the audio element.
-      </audio>
 
+      <AudioPlayer isPlaying={isAudioPlaying} />
 
-      <PizzaMenu pizzas={pizzas}/>
-
+      <PizzaMenu pizzas={pizzas} />
 
       <div>
         <br />
         <AddPizza addPizza={addPizza} />
       </div>
-
 
       <DrinkMenu title="Notre Menu de Boissons">
         <DrinkCard
