@@ -1,5 +1,14 @@
 import { SyntheticEvent, useState } from "react";
 import { Movie } from "../../types";
+import {
+  Box,
+  Button,
+  TextField,
+  Card,
+  CardContent,
+  CardMedia,
+  CardActionArea,
+} from "@mui/material";
 
 interface AddMovieFormProps {
   onMovieAdded: (movie: Movie) => void;
@@ -23,60 +32,98 @@ const AddMovieForm = ({ onMovieAdded }: AddMovieFormProps) => {
     setDescription("");
     setBudget(0);
   };
+
+  const [open, setOpen] = useState(false);
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
+  //const theme = useTheme();
+
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>Titre :</label>
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Réalisateur :</label>
-        <input
-          type="text"
-          value={director}
-          onChange={(e) => setDirector(e.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <label>Durée :</label>
-        <input
-          type="number"
-          value={duration}
-          onChange={(e) => setDuration(parseInt(e.target.value))}
-          required
-        />
-      </div>
-      <div>
-        <label>URL de l'image :</label>
-        <input
-          type="text"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Description :</label>
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-      </div>
-      <div>
-        <label>Budget :</label>
-        <input
-          type="number"
-          value={budget}
-          onChange={(e) => setBudget(parseInt(e.target.value))}
-        />
-      </div>
-      <button type="submit">Ajouter</button>
-    </form>
+    <div>
+      <Card sx={{ maxWidth: 345 }}>
+        {!open ? (
+          <>
+            <CardActionArea onClick={handleClick}>
+              <CardMedia
+                component="img"
+                height="500"
+                image="https://www.pngall.com/wp-content/uploads/10/Plus-Symbol-Vector-PNG-Cutout.png"
+                alt="Ajouter un Film"
+              />
+            </CardActionArea>
+          </>
+        ) : (
+          <>
+            {" "}
+            <Box
+              component="form"
+              onSubmit={handleSubmit}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+              }}
+            >
+              <CardContent
+                sx={{
+                  height: 500,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 1,
+                }}
+              >
+                <TextField
+                  label="Titre"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+                <TextField
+                  label="Réalisateur"
+                  value={director}
+                  onChange={(e) => setDirector(e.target.value)}
+                  required
+                />
+                <TextField
+                  label="Durée"
+                  type="number"
+                  value={duration}
+                  onChange={(e) => setDuration(parseInt(e.target.value))}
+                  required
+                />
+                <TextField
+                  label="URL de l'image"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                />
+                <TextField
+                  label="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+                <TextField
+                  label="Budget"
+                  type="number"
+                  value={budget}
+                  onChange={(e) => setBudget(parseInt(e.target.value))}
+                />
+                <Box sx={{ display: "flex", flexDirection: "row", gap: 2 }}>
+                  <Button type="submit" variant="contained">
+                    Ajouter
+                  </Button>
+                  <Button onClick={handleClick} variant="contained">
+                    Annuler
+                  </Button>
+                </Box>
+              </CardContent>
+            </Box>
+          </>
+        )}
+      </Card>
+    </div>
+  
   );
 };
 

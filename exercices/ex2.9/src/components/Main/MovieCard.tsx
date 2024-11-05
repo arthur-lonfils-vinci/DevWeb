@@ -1,37 +1,63 @@
+import { useState } from "react";
 import { Movie } from "../../types";
-
-
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  CardActionArea,
+} from "@mui/material";
 
 interface MovieCardProps {
   movie: Movie;
 }
 
 const MovieCard = ({ movie }: MovieCardProps) => {
+  const [open, setOpen] = useState(false);
+  const handleClick = () => {
+    setOpen(!open);
+  };
+
   return (
-    <div className="card">
-     
-      <div className="card-body">
-        <h3 className="card-title">{movie.title}</h3>
-        {movie.imageUrl && (
-        <img src={movie.imageUrl} className="card-img-top" alt={movie.title} />
-      )}
-        <p className="card-text">
-          <strong>Réalisateur :</strong> {movie.director}
-        </p>
-        <p className="card-text">
-          <strong>Durée :</strong> {movie.duration} minutes
-        </p>
-        {movie.budget && (
-          <p className="card-text">
-            <strong>Budget :</strong> {movie.budget} millions de dollars
-          </p>
-        )}
-        {movie.description && (
-          <p className="card-text">
-            <strong>Description :</strong> {movie.description}
-          </p>
-        )}
-      </div>
+    <div>
+      <Card sx={{ maxWidth: 345 }}>
+        <CardActionArea onClick={handleClick}>
+          {!open ? (
+            <>
+              <CardMedia
+                component="img"
+                height="500"
+                image={movie.imageUrl}
+                alt={movie.title}
+              />
+            </>
+          ) : (
+            <>
+              <CardContent sx={{ height: 500 }}>
+                <Typography gutterBottom variant="h5" component="div">
+                  {movie.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Réalisateur : </strong>{movie.director}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  <strong>Durée :</strong> {movie.duration} minutes
+                </Typography>
+                {movie.budget && (
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Budget :</strong> {movie.budget} millions de dollars
+                  </Typography>
+                )}
+                {movie.description && (
+                  <Typography variant="body2" color="text.secondary">
+                    <strong>Description :</strong> {movie.description}
+                  </Typography>
+                )}
+              </CardContent>
+            </>
+          )}
+        </CardActionArea>
+      </Card>
     </div>
   );
 };
