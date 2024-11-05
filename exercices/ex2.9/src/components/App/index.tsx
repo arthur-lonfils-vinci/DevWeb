@@ -22,8 +22,7 @@ const defaultMovies: Movie[] = [
     title: "The Matrix",
     director: "Lana Wachowski, Lilly Wachowski",
     duration: 136,
-    imageUrl:
-      "https://picfiles.alphacoders.com/385/385304.jpg",
+    imageUrl: "https://picfiles.alphacoders.com/385/385304.jpg",
     description:
       "A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.",
     budget: 63,
@@ -53,8 +52,7 @@ const defaultMovies: Movie[] = [
     duration: 134,
     imageUrl:
       "https://image.tmdb.org/t/p/original/xQVBU9SWgI3e2doljPQshlUL6GR.jpg",
-    description:
-      `Galen Erso is forced by the Empire to help complete the Death Star, 
+    description: `Galen Erso is forced by the Empire to help complete the Death Star, 
       a planet-destroying superweapon. His daughter, Jyn, escapes and is later recruited by the Rebel Alliance to learn more about her father’s work. 
       Joined by rebels Cassian Andor, Bodhi Rook, K-2SO, Chirrut Îmwe, and Baze Malbus, Jyn leads a daring mission to obtain critical Death Star information. 
       Their effort sparks hope and becomes a turning point for the Rebellion against the Empire.`,
@@ -85,11 +83,13 @@ function App() {
     >
       <Header urlLogo="https://logodix.com/logo/2098363.png" />
 
-      <Box sx={{
-        py: 4,
-      }}>
-      <PageTitle title="My favorite movies" />
-      <MovieListView movies={movies} onMovieAdded={onMovieAdded}/>
+      <Box
+        sx={{
+          py: 4,
+        }}
+      >
+        <PageTitle title="My favorite movies" />
+        <MovieListView movies={movies} onMovieAdded={onMovieAdded} />
       </Box>
 
       <Footer urlLogo="https://media.istockphoto.com/id/1202770152/fr/photo/bobine-de-film-disolement-sur-le-fond-jaune-lumineux-dans-les-couleurs-pastel.jpg?s=1024x1024&w=is&k=20&c=2yKBrC8oyimPdW-5IxFWN_zxFPVK3KWYL9OE2gVmVX4=">
